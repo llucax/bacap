@@ -1,0 +1,140 @@
+#!/bin/bash
+
+#_INCLUDE_START_
+# Default config values
+
+# Be verbose
+VERBOSE=1
+
+# Be extra verbose
+DEBUG=0
+
+# Don't actually do anything, just print the commands
+DRY_RUN=0
+
+# Log file (if empty, print to stdout/err)
+LOG_FILE=
+
+# Where to find the configuration of the hosts to backup
+CONFIG_PATH=/etc/bacap/hosts
+
+# Name of the local host (so no ssh would be used with this host)
+LOCALHOST=localhost
+
+# Where to put the backups
+BACKUP_PATH=/backup
+
+# Date format used for backed up directories (passed to the date command)
+DATE_FMT="%Y-%m-%d"
+
+# rsync flags to use
+RSYNC_FLAGS="-aAXHx --numeric-ids --delete"
+
+# rsync flags to use when in verbose mode
+RSYNC_VERBOSE_FLAGS="-v --stats"
+
+# rsync remote shell to use
+RSYNC_RSH="ssh -c arcfour -o Compression=no -x"
+
+#_INCLUDE_END_
+
+
+# Load configuration files
+source "/etc/bacaprc" 2> /dev/null
+source "/etc/bacap/bacaprc" 2> /dev/null
+source `dirname \`readlink -f "$0"\``/bacaprc 2> /dev/null
+test -n "$1" && source "$1"
+
+
+export RSYNC_RSH
+
+run=
+[ $DRY_RUN -eq 1 ] &&
+	run=echo
+[ $VERBOSE -eq 1 ] &&
+	RSYNC_FLAGS="$RSYNC_FLAGS $RSYNC_VERBOSE_FLAGS"
+[ $DEBUG -eq 1 ] &&
+	V=-v
+[ -n "$LOG_FILE" ] &&
+	exec 3>&2 &&
+	exec 1>>"$LOG_FILE" &&
+	exec 2>>"$LOG_FILE"
+
+pout() {
+	echo "$@" >&3
+}
+
+plog() {
+	[ $VERBOSE -eq 1 ] &&
+		echo "$@"
+}
+
+perror() {
+	echo "$@" >&2
+}
+
+host_up() {
+	ping -c1 "$1" > /dev/null 2>&1
+}
+
+date=`date "+$DATE_FMT"`
+plog
+plog
+plog "========================================================================="
+plog "Starting backup for $date at `date '+%Y-%m-%d %H:%M:%S'`"
+plog "========================================================================="
+ret=0
+for host_path in "$CONFIG_PATH"/*
+do
+	host=`basename "$host_path"`
+	host_backup_path="$BACKUP_PATH/$host"
+	dst="$BACKUP_PATH/$host/$date"
+	src=`cat "$host_path/paths"`
+	[ "$host" != "$LOCALHOST" ] &&
+		src=`awk "{print \"$host:\"\\$1}" "$host_path/paths"`
+	exclude="$host_path/excludes"
+	current_link="$host_backup_path/current"
+	current_dir="$host_backup_path/`readlink \"$current_link\"`"
+	exclude_flags=
+	plog "-----------------------------------------------------------------"
+	plog "Backup for host $host"
+	plog "-----------------------------------------------------------------"
+	plog "Source:      "$src
+	plog "Destination: $dst"
+	plog "Last:        $current_dir"
+	plog
+	[ -d "$dst" ] &&
+		perror "$dst already exists, skipping..." &&
+		continue
+	! host_up $host &&
+		perror "$host is down, skipping..." &&
+		continue
+	[ -r "$exclude" ] &&
+		exclude_flags=" --exclude-from=$exclude --delete-excluded"
+	plog "Rotating backup..."
+	$run cp -al $V "$current_dir" "$dst" ||
+		ret=$(($ret+1))
+	plog "Running rsync..."
+	$run rsync $RSYNC_FLAGS $exclude_flags $src "$dst/" ||
+		ret=$(($ret+1))
+	plog "Moving current..."
+	$run rm $V "$current_link" ||
+		ret=$(($ret+1))
+	$run ln -s $V "$date" "$current_link" ||
+		ret=$(($ret+1))
+done
+
+plog "========================================================================="
+plog "Backup for $date finished at `date '+%Y-%m-%d %H:%M:%S'`"
+plog "========================================================================="
+
+if [ $ret -ne 0 ]
+then
+	pout 'There were some errors when running the backup.'
+	pout
+	pout "Please take a look at the log: $LOG_FILE"
+	pout
+fi
+
+exit $ret
+

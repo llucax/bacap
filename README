@@ -1,0 +1,175 @@
+.. -*- restructuredtext -*-
+
+
+==========================================
+Bacap - The extremely simple backup script
+==========================================
+
+:Author: Leandro Lucarella
+:Contact: luca@llucax.com.ar
+:Copyright: Leandro Lucarella (2010), released under the BOLA_ license
+
+.. _BOLA: http://blitiri.com.ar/p/bola/
+
+
+
+About
+=====
+
+Bacap_ is a very simple script (~100 SLOC_ of Bash_) to do an incremental backup
+that saves space using rsync_ and hard-links. Is not the first, and it probably
+will not be the last, so why should you use precisely this one? I have **no**
+idea. All I can tell you is:
+
+1. I did it, so it has to be great!
+2. Is very simple, meaning is very easy to understand and customize.
+3. You can backup multiple hosts.
+
+Did I mention is very simple? I guess that is the only selling point, so
+remember: **It's very simple** =)
+
+.. _Bacap: http://www.llucax.com.ar/proj/bacap/
+.. _SLOC: http://en.wikipedia.org/wiki/Source_lines_of_code
+.. _Bash: http://www.gnu.org/software/bash/
+.. _rsync: http://rsync.samba.org/
+
+
+
+Instalation
+===========
+
+Doing something very complex in ~100 SLOC_ is not easy, unless you're standing
+in the shoulders of giants. I'm standing in the shoulders of rsync_ mainly, so
+you should install it before using the script. You will need a bunch of `basic
+POSIX commands`__, like ``date``, ``dirname``, ``readlink``, ``basename``,
+``cat``, ``awk``, etc.; and ``crontab`` if you don't want to run the script
+manually each time you remember to actually do a backup; but I'm sure you
+already have those.  And of course, Bash_, but again, I'm sure you have it too.
+If you want to backup remote hosts, be sure ssh_ is installed too.
+
+__ http://www.opengroup.org/onlinepubs/009695399/utilities/toc.html
+.. _ssh: http://www.openssh.com/
+
+Once you have it all, just `download the script`__ from the git_ repo__ and copy
+it to wherever you like. Set the executable bit if appropriate::
+
+	chmod a+x bacap
+
+__ http://git.llucax.com.ar/w/software/bacap.git?a=blob_plain;f=bacap;hb=HEAD
+__ http://git.llucax.com.ar/w/software/bacap.git
+.. _git: http://git-scm.com/
+
+
+
+Configuration
+=============
+
+If you don't like the defaults (you probably wont), you can add a configuration
+file. Configuration files are searched in this places:
+
+1. ``/etc/bacaprc``
+2. ``/etc/bacap/bacaprc``
+3. ``bacaprc`` in the same directory as the ``bacap`` script
+
+Order is important, since all files are read (if possible) and values in the
+last configuration file read overwrites old values. The script takes an optional
+parameter, which is another location to look for a configuration file. The
+configuration file passed as argument will be read last, and an error will be
+printed if can't be found (no error is issued if any of the other configuration
+files are missing).
+
+The configuration file is a Bash_ script too, and these are the default values:
+
+.. include:: bacap
+	:literal:
+	:start-after: #_INCLUDE_START_
+	:end-before: #_INCLUDE_END_
+
+Once you've created the configuration file(s), you should create the directory
+``$CONFIG_PATH`` (meaning, the value you used for that variable in the
+configuration file)::
+
+	mkdir -p $CONFIG_PATH
+
+The create a directory for each host you want to backup there, the directory
+name should be the name of the host (as you would use to connect to it using
+ssh_). For now let's say we will only backup ``localhost``::
+
+	mkdir $CONFIG_PATH/$LOCALHOST
+
+You should be able to guess what ``$LOCALHOST`` stands for by now =)
+
+Now, you should create at least one file there, ``paths`` which should have one
+line for each path to backup in that host. Let's say we want to backup only
+``/etc`` and ``/home``::
+
+	echo /etc > $CONFIG_PATH/$LOCALHOST/paths
+	echo /home > $CONFIG_PATH/$LOCALHOST/paths
+
+But sometimes there are things there that you don't want to backup, in that
+case you can create a file named ``excludes`` too, and write which paths you
+want to exclude there, one path in each line (you can use wildcards and anything
+supported by the ``--exclude-from`` rsync_ option). Let's say we don't want to
+backup rata's home::
+
+	echo /home/rata/ > $CONFIG_PATH/$LOCALHOST/excludes
+
+That's pretty much it. If you want to add other hosts, just create the host
+directory and the needed host configuration files.
+
+You may want to automate it using *cron*. I will not include a *cron* tutorial
+here, but if you are completely lost, you can add this line to ``/etc/crontab``
+to make a daily backup at 6:30::
+
+	25 6 * * * root /path/to/bacap
+
+If you are a Debian_ user, you can also simply install the script in
+``/etc/cron.daily`` (or make a symlink or something similar) and you are set.
+
+.. _Debian: http://www.debian.org/
+
+
+
+Usage
+=====
+
+As we said in the configuration section, the only argument the script take is an
+extra configuration file. All options are managed through configurations files.
+
+The script creates a new directory in ``$BACKUP_PATH/$host/$date`` and copies
+(hard-links) the configured paths for each ``$host``. ``$date`` is the current
+date at the time of starting the script, formated according to ``$DATE_FMT``. By
+default this has day *resolution*, but you can add hours, minutes or even
+seconds if you want to do more frequent backups. If the directory already exist
+for any host, it skips that host.
+
+A symbolic link is created at the end of the backup, with the name
+``$BACKUP_PATH/$host/current``, and pointing to the newly created directory.
+
+
+
+Similar alternatives
+====================
+
+* Do it yourself: this script was **heavily** inspired by an article__ by `Kevin
+  Korb`__ (well, it was really inspired by the `previous version`__ of the
+  article =).
+* `Back In Time`__: Nice looking graphical alternative.
+* `rsnapshot`__: A more mature and heavier alternative. I didn't really used it
+  though, so I can't say much.
+
+__ http://www.sanitarium.net/golug/rsync_backups_2010.html
+__ http://www.sanitarium.net/
+__ http://www.sanitarium.net/golug/rsync_backups_2005.html
+
+__ http://backintime.le-web.org/
+
+__ http://rsnapshot.org/
+
+
+I'm sure there are plenty of others, if you have one and want to be listed here,
+please feel free to `drop me an e-mail`__.
+
+__ mailto:luca@llucax.com.ar
+
+
