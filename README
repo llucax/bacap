@@ -70,13 +70,19 @@ file. Configuration files are searched in this places:
 1. ``/etc/bacaprc``
 2. ``/etc/bacap/bacaprc``
 3. ``bacaprc`` in the same directory as the ``bacap`` script
+4. Optional parameter passed as argument to the script
+5. ``$CONFIG_PATH/$HOST/bacaprc``
 
 Order is important, since all files are read (if possible) and values in the
 last configuration file read overwrites old values. The script takes an optional
-parameter, which is another location to look for a configuration file. The
-configuration file passed as argument will be read last, and an error will be
-printed if can't be found (no error is issued if any of the other configuration
-files are missing).
+parameter, which is another location to look for a configuration file. If the
+configuration file passed as argument can't be found, an error will be printed
+(no error is issued if any of the other configuration files are missing).
+Also, config options could be specified on a per host basis by creating a
+``bacaprc`` file in ``$CONFIG_PATH/$HOST``. As a side effect of this,
+configuration file(s) are read initially and each time the script backups a new
+host. So the configuration file(s) are read at least two times even if you
+backup one host.
 
 The configuration file is a Bash_ script too, and these are the default values:
 

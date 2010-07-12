@@ -38,13 +38,17 @@ RSYNC_RSH="ssh -c arcfour -o Compression=no -x"
 
 #_INCLUDE_END_
 
+SCRIPT_DIR=$(dirname `readlink -f $0`)
+BACAPRC=$1
 
 # Load configuration files
-source "/etc/bacaprc" 2> /dev/null
-source "/etc/bacap/bacaprc" 2> /dev/null
-source `dirname \`readlink -f "$0"\``/bacaprc 2> /dev/null
-test -n "$1" && source "$1"
-
+load_config() {
+	source "/etc/bacaprc" 2> /dev/null
+	source "/etc/bacap/bacaprc" 2> /dev/null
+	source "$SCRIPT_DIR/bacaprc" 2> /dev/null
+	test -n "$BACAPRC" && source "$BACAPRC"
+}
+load_config
 
 export RSYNC_RSH
 
@@ -86,6 +90,9 @@ plog "========================================================================="
 ret=0
 for host_path in "$CONFIG_PATH"/*
 do
+	# Load default config and override config if correspond
+	load_config
+	source "$host_path/bacaprc" 2>/dev/null
 	host=`basename "$host_path"`
 	host_backup_path="$BACKUP_PATH/$host"
 	dst="$BACKUP_PATH/$host/$date"
