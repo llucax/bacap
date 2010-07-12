@@ -90,6 +90,7 @@ plog "========================================================================="
 ret=0
 for host_path in "$CONFIG_PATH"/*
 do
+	saved_ret=$ret
 	# Load default config and override config if correspond
 	load_config
 	source "$host_path/bacaprc" 2>/dev/null
@@ -133,6 +134,10 @@ do
 		ret=$(($ret+1))
 	$run ln -s $V "$date" "$current_link" ||
 		ret=$(($ret+1))
+	if [ $ret -ne $saved_ret ]
+	then
+		ERROR_HOSTS="$ERROR_HOSTS $host"
+	fi
 done
 
 plog "========================================================================="
@@ -141,7 +146,7 @@ plog "========================================================================="
 
 if [ $ret -ne 0 ]
 then
-	pout 'There were some errors when running the backup.'
+	pout "There were some errors when running the backup on: $ERROR_HOSTS"
 	pout
 	pout "Please take a look at the log: $LOG_FILE"
 	pout
