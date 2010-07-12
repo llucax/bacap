@@ -156,6 +156,10 @@ for any host, it skips that host.
 A symbolic link is created at the end of the backup, with the name
 ``$BACKUP_PATH/$host/current``, and pointing to the newly created directory.
 
+Also, to see what have actually changed between two backups you can run rsync
+with your usual flags plus "-nv --delete". For example if you just use "-a", to
+see the differences between lolaus/2010-07-11 and lolaus/2010-07-12 you can run::
+        rsync -nav --delete lolaus/2010-07-11/ lolaus/2010-07-12/
 
 
 Similar alternatives
