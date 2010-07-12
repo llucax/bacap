@@ -120,6 +120,10 @@ backup rata's home::
 
 	echo /home/rata/ > $CONFIG_PATH/$LOCALHOST/excludes
 
+Also, if you don't want to exclude files matching some pattern, you can create
+a file named ``includes`` with the patterns you want to include (you can use
+anything supported by the ``--include-from`` rsync_ option)
+
 That's pretty much it. If you want to add other hosts, just create the host
 directory and the needed host configuration files.
 

@@ -100,9 +100,11 @@ do
 	[ "$host" != "$LOCALHOST" ] &&
 		src=`awk "{print \"$host:\"\\$1}" "$host_path/paths"`
 	exclude="$host_path/excludes"
+	include="$host_path/includes"
 	current_link="$host_backup_path/current"
 	current_dir="$host_backup_path/`readlink \"$current_link\"`"
 	exclude_flags=
+	include_flags=
 	plog "-----------------------------------------------------------------"
 	plog "Backup for host $host"
 	plog "-----------------------------------------------------------------"
@@ -117,12 +119,14 @@ do
 		perror "$host is down, skipping..." &&
 		continue
 	[ -r "$exclude" ] &&
-		exclude_flags=" --exclude-from=$exclude --delete-excluded"
+		extra_flags="--exclude-from=$exclude --delete-excluded"
+	[ -r "$include" ] &&
+		extra_flags="$extra_flags --include-from=$include"
 	plog "Rotating backup..."
 	$run cp -al $V "$current_dir" "$dst" ||
 		ret=$(($ret+1))
 	plog "Running rsync..."
-	$run rsync $RSYNC_FLAGS $exclude_flags $src "$dst/" ||
+	$run rsync $RSYNC_FLAGS $extra_flags $src "$dst/" ||
 		ret=$(($ret+1))
 	plog "Moving current..."
 	$run rm $V "$current_link" ||
