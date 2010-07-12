@@ -19,7 +19,7 @@ LOG_FILE=
 CONFIG_PATH=/etc/bacap/hosts
 
 # Name of the local host (so no ssh would be used with this host)
-LOCALHOST=localhost
+LOCALHOST=$HOSTNAME
 
 # Where to put the backups
 BACKUP_PATH=/backup
