@@ -108,7 +108,7 @@ do
 	plog "-----------------------------------------------------------------"
 	plog "Backup for host $host"
 	plog "-----------------------------------------------------------------"
-	plog "Source:      "$src
+	plog "Source:      $src"
 	plog "Destination: $dst"
 	plog "Last:        $current_dir"
 	plog

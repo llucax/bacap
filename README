@@ -97,7 +97,7 @@ configuration file)::
 
 	mkdir -p $CONFIG_PATH
 
-The create a directory for each host you want to backup there, the directory
+Then create a directory for each host you want to backup there, the directory
 name should be the name of the host (as you would use to connect to it using
 ssh_). For now let's say we will only backup ``localhost``::
 
