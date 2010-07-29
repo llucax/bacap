@@ -104,8 +104,7 @@ do
 	include="$host_path/includes"
 	current_link="$host_backup_path/current"
 	current_dir="$host_backup_path/`readlink \"$current_link\"`"
-	exclude_flags=
-	include_flags=
+	extra_flags=
 	plog "-----------------------------------------------------------------"
 	plog "Backup for host $host"
 	plog "-----------------------------------------------------------------"
