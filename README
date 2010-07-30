@@ -110,7 +110,7 @@ line for each path to backup in that host. Let's say we want to backup only
 ``/etc`` and ``/home``::
 
 	echo /etc > $CONFIG_PATH/$LOCALHOST/paths
-	echo /home > $CONFIG_PATH/$LOCALHOST/paths
+	echo /home >> $CONFIG_PATH/$LOCALHOST/paths
 
 But sometimes there are things there that you don't want to backup, in that
 case you can create a file named ``excludes`` too, and write which paths you
@@ -131,7 +131,7 @@ You may want to automate it using *cron*. I will not include a *cron* tutorial
 here, but if you are completely lost, you can add this line to ``/etc/crontab``
 to make a daily backup at 6:30::
 
-	25 6 * * * root /path/to/bacap
+	30 6 * * * root /path/to/bacap
 
 If you are a Debian_ user, you can also simply install the script in
 ``/etc/cron.daily`` (or make a symlink or something similar) and you are set.
