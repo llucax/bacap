@@ -27,6 +27,10 @@ BACKUP_PATH=/backup
 # Date format used for backed up directories (passed to the date command)
 DATE_FMT="%Y-%m-%d"
 
+# Ping remote hosts to check if they are up (set to 0 if your hosts don't
+# reply to ICMP pings).
+PING_CHECK=1
+
 # rsync flags to use
 RSYNC_FLAGS="-aAXHx --numeric-ids --delete"
 
@@ -77,7 +81,7 @@ perror() {
 	echo "$@" >&2
 }
 
-host_up() {
+ping_host() {
 	ping -c1 "$1" > /dev/null 2>&1
 }
 
@@ -115,7 +119,7 @@ do
 	[ -d "$dst" ] &&
 		perror "$dst already exists, skipping..." &&
 		continue
-	! host_up $host &&
+	[ "$PING_CHECK" -eq 1 ] && ! ping_host $host &&
 		perror "$host is down, skipping..." &&
 		continue
 	[ -r "$exclude" ] &&
