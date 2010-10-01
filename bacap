@@ -12,6 +12,9 @@ DEBUG=0
 # Don't actually do anything, just print the commands
 DRY_RUN=0
 
+# Force synchronization, even when the target already exist
+FORCE_SYNC=0
+
 # Log file (if empty, print to stdout/err)
 LOG_FILE=
 
@@ -116,7 +119,7 @@ do
 	plog "Destination: $dst"
 	plog "Last:        $current_dir"
 	plog
-	[ -d "$dst" ] &&
+	[ -d "$dst" ] && [ "$FORCE_SYNC" -ne 1 ] &&
 		perror "$dst already exists, skipping..." &&
 		continue
 	[ "$PING_CHECK" -eq 1 ] && ! ping_host $host &&
