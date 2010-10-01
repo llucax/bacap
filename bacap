@@ -66,8 +66,8 @@ run=
 	RSYNC_FLAGS="$RSYNC_FLAGS $RSYNC_VERBOSE_FLAGS"
 [ $DEBUG -eq 1 ] &&
 	V=-v
+exec 3>&2
 [ -n "$LOG_FILE" ] &&
-	exec 3>&2 &&
 	exec 1>>"$LOG_FILE" &&
 	exec 2>>"$LOG_FILE"
 
@@ -150,10 +150,14 @@ plog "========================================================================="
 
 if [ $ret -ne 0 ]
 then
+	pout
 	pout "There were some errors when running the backup on: $ERROR_HOSTS"
 	pout
-	pout "Please take a look at the log: $LOG_FILE"
-	pout
+	if [ -n "$LOG_FILE" ]
+	then
+		pout "Please take a look at the log: $LOG_FILE"
+		pout
+	fi
 fi
 
 exit $ret
