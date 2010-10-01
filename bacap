@@ -41,7 +41,7 @@ RSYNC_FLAGS="-aAXHx --numeric-ids --delete"
 RSYNC_VERBOSE_FLAGS="-v --stats"
 
 # rsync remote shell to use
-RSYNC_RSH="ssh -c arcfour -o Compression=no -x"
+RSYNC_RSH="ssh"
 
 #_INCLUDE_END_
 
