@@ -155,7 +155,7 @@ Here are a few tips on how to configure Bacap_ for several common scenarios.
 Automating backups using cron
 -----------------------------
 
-You probably want to automate you backup using *cron*. I will not include
+You probably want to automate your backup using *cron*. I will not include
 a *cron* tutorial here, but if you are completely lost, you can add this line to
 ``/etc/crontab`` to make a daily backup at 6:30::
 
@@ -176,7 +176,7 @@ public key to the target's ``/root/.ssh/authorized_keys`` (or the user that runs
 the backup) and set the Bacap_ configuration variable ``RSYNC_RSH`` to something
 like::
 
-	RSYNC_RSH="-i /path/to/priv-key -o NumberOfPasswordPrompts=0"
+	RSYNC_RSH="ssh -i /path/to/priv-key -o NumberOfPasswordPrompts=0"
 
 The ``-o NumberOfPasswordPrompts=0`` is not necessary, but you would appreciate
 it if something is wrong with your key, since if you don't use it, rsync_ will
@@ -194,7 +194,7 @@ compression::
 And if your network is trusted, you probably don't need very string encryption
 either::
 
-	RSYNC_RSH="ssh -c arcfour"
+	RSYNC_RSH="ssh -o Compression=no -c arcfour"
 
 
 Listing differences between 2 snapshots
