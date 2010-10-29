@@ -182,6 +182,9 @@ The ``-o NumberOfPasswordPrompts=0`` is not necessary, but you would appreciate
 it if something is wrong with your key, since if you don't use it, rsync_ will
 hang asking for a password.
 
+Also, you may consider using ``StrictHostKeyChecking=no`` ssh option if you
+backup hosts with dynamic IP address.
+
 
 Backup local networks nodes (or nodes with a fast connection)
 -------------------------------------------------------------
