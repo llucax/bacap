@@ -103,6 +103,7 @@ do
 	source "$host_path/bacaprc" 2>/dev/null
 	host=`basename "$host_path"`
 	host_backup_path="$BACKUP_PATH/$host"
+	mkdir -p $host_backup_path
 	dst="$BACKUP_PATH/$host/$date"
 	src=`cat "$host_path/paths"`
 	[ "$host" != "$LOCALHOST" ] &&
@@ -134,7 +135,7 @@ do
 				--link-dest="$current_dir" $src "$dst/" ||
 		ret=$(($ret+1))
 	plog "Moving current..."
-	$run rm $V "$current_link" ||
+	$run rm -f $V "$current_link" ||
 		ret=$(($ret+1))
 	$run ln -s $V "$date" "$current_link" ||
 		ret=$(($ret+1))
