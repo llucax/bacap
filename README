@@ -170,11 +170,12 @@ If you are a Debian_ user, you can also simply install the script in
 Providing a ssh_ key
 --------------------
 
-When doing a backup of a remote host, you probably want ssh_ to be able to login
-without providing a password. To do so, you can generate a ssh_ key, copy the
-public key to the target's ``/root/.ssh/authorized_keys`` (or the user that runs
-the backup) and set the Bacap_ configuration variable ``RSYNC_RSH`` to something
-like::
+When doing a backup of a remote host, you probably want ssh_ to be able to
+login without providing a password. To do so, you can generate a ssh_ key using
+``ssh-keygen``, copy the public key to the target's
+``/root/.ssh/authorized_keys`` using ``ssh-copy-id root@host`` (or the user
+that runs the backup) and set the Bacap_ configuration variable ``RSYNC_RSH``
+to something like::
 
 	RSYNC_RSH="ssh -i /path/to/priv-key -o NumberOfPasswordPrompts=0"
 
