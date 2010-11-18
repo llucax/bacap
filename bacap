@@ -127,7 +127,7 @@ do
 		perror "$host is down, skipping..." &&
 		continue
 	[ -r "$exclude" ] &&
-		extra_flags="--exclude-from=$exclude --delete-excluded"
+		extra_flags="--exclude-from=$exclude"
 	[ -r "$include" ] &&
 		extra_flags="$extra_flags --include-from=$include"
 	plog "Running rsync..."
