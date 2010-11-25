@@ -114,7 +114,7 @@ do
 	current_dir="$host_backup_path/`readlink \"$current_link\"`"
 	extra_flags=
 	plog "-----------------------------------------------------------------"
-	plog "Backup for host $host"
+	plog "Backup for host $host started at `date '+%Y-%m-%d %H:%M:%S'`"
 	plog "-----------------------------------------------------------------"
 	plog "Source:      $src"
 	plog "Destination: $dst"
