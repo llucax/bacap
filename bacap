@@ -132,15 +132,33 @@ do
 		extra_flags="$extra_flags --include-from=$include"
 	plog "Running rsync..."
 	$run rsync $RSYNC_FLAGS $extra_flags \
-				--link-dest="$current_dir" $src "$dst/" ||
-		ret=$(($ret+1))
-	plog "Moving current..."
-	$run rm -f $V "$current_link" ||
-		ret=$(($ret+1))
-	$run ln -s $V "$date" "$current_link" ||
-		ret=$(($ret+1))
-	if [ $ret -ne $saved_ret ]
+				--link-dest="$current_dir" $src "$dst/"
+	rsync_ret=$?
+	case $rsync_ret in
+		0)
+			# Normal return
+			;;
+		24)
+			# Ignore error 24 from rsync ("Partial transfer due to
+			# vanished source files") which is somewhat expected
+			# since we don't do a snapshot
+			;;
+		*)
+			# Any other error is important enough
+			ret=$(($ret+1))
+			;;
+	esac
+
+	if [ $ret -eq $saved_ret ]
 	then
+		# Only move current if rsync did not fail, to avoid dangling
+		# symlinks
+		plog "Moving current..."
+		$run rm -f $V "$current_link" ||
+		ret=$(($ret+1))
+		$run ln -s $V "$date" "$current_link" ||
+		ret=$(($ret+1))
+	else
 		ERROR_HOSTS="$ERROR_HOSTS $host"
 	fi
 done
