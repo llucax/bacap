@@ -195,7 +195,7 @@ compression::
 
 	RSYNC_RSH="ssh -o Compression=no"
 
-And if your network is trusted, you probably don't need very string encryption
+And if your network is trusted, you probably don't need very strong encryption
 either::
 
 	RSYNC_RSH="ssh -o Compression=no -c arcfour"
