@@ -35,7 +35,7 @@ DATE_FMT="%Y-%m-%d"
 PING_CHECK=1
 
 # rsync flags to use
-RSYNC_FLAGS="-aAXHx --numeric-ids"
+RSYNC_FLAGS="-aAHSXx --numeric-ids"
 
 # rsync flags to use when in verbose mode
 RSYNC_VERBOSE_FLAGS="-v --stats"
