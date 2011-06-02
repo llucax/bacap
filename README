@@ -35,8 +35,8 @@ remember: **It's very simple** =)
 
 
 
-Instalation
-===========
+Installation
+============
 
 Doing something very complex in ~100 SLOC_ is not easy, unless you're standing
 in the shoulders of giants. I'm standing in the shoulders of rsync_ mainly, so
