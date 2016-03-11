@@ -1,13 +1,6 @@
 .. -*- restructuredtext -*-
 
 
-.. raw:: html
-
-   <div style="width: 220px; height: 270px; float: right; margin-left: 1em; margin-top: 1em">
-   <iframe width="220" height="270" style="border: none; outline: none" src="http://tools.flattr.net/widgets/thing.html?thing=1141801"></iframe>
-   </div>
-
-
 ==========================================
 Bacap - The extremely simple backup script
 ==========================================
