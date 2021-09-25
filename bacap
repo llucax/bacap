@@ -71,16 +71,16 @@ exec 3>&2
 	exec 1>>"$LOG_FILE" &&
 	exec 2>>"$LOG_FILE"
 
-pout() {
+error() {
 	echo "$@" >&3
 }
 
-plog() {
+log() {
 	[ $VERBOSE -eq 1 ] &&
 		echo "$@"
 }
 
-perror() {
+logerr() {
 	echo "$@" >&2
 }
 
@@ -89,11 +89,11 @@ ping_host() {
 }
 
 date=`date "+$DATE_FMT"`
-plog
-plog
-plog "========================================================================="
-plog "Starting backup for $date at `date '+%Y-%m-%d %H:%M:%S'`"
-plog "========================================================================="
+log
+log
+log "========================================================================="
+log "Starting backup for $date at `date '+%Y-%m-%d %H:%M:%S'`"
+log "========================================================================="
 ret=0
 for host_path in "$CONFIG_PATH"/*
 do
@@ -113,24 +113,24 @@ do
 	current_link="$host_backup_path/current"
 	current_dir="$host_backup_path/`readlink \"$current_link\"`"
 	extra_flags=
-	plog "-----------------------------------------------------------------"
-	plog "Backup for host $host started at `date '+%Y-%m-%d %H:%M:%S'`"
-	plog "-----------------------------------------------------------------"
-	plog "Source:      $src"
-	plog "Destination: $dst"
-	plog "Last:        $current_dir"
-	plog
+	log "-----------------------------------------------------------------"
+	log "Backup for host $host started at `date '+%Y-%m-%d %H:%M:%S'`"
+	log "-----------------------------------------------------------------"
+	log "Source:      $src"
+	log "Destination: $dst"
+	log "Last:        $current_dir"
+	log
 	[ -d "$dst" ] && [ "$FORCE_SYNC" -ne 1 ] &&
-		perror "$dst already exists, skipping..." &&
+		logerr "$dst already exists, skipping..." &&
 		continue
 	[ "$PING_CHECK" -eq 1 ] && ! ping_host $host &&
-		perror "$host is down, skipping..." &&
+		logerr "$host is down, skipping..." &&
 		continue
 	[ -r "$exclude" ] &&
 		extra_flags="--exclude-from=$exclude"
 	[ -r "$include" ] &&
 		extra_flags="$extra_flags --include-from=$include"
-	plog "Running rsync..."
+	log "Running rsync..."
 	$run rsync $RSYNC_FLAGS $extra_flags \
 				--link-dest="$current_dir" $src "$dst/"
 	rsync_ret=$?
@@ -153,7 +153,7 @@ do
 	then
 		# Only move current if rsync did not fail, to avoid dangling
 		# symlinks
-		plog "Moving current..."
+		log "Moving current..."
 		$run rm -f $V "$current_link" ||
 		ret=$(($ret+1))
 		$run ln -s $V "$date" "$current_link" ||
@@ -163,19 +163,19 @@ do
 	fi
 done
 
-plog "========================================================================="
-plog "Backup for $date finished at `date '+%Y-%m-%d %H:%M:%S'`"
-plog "========================================================================="
+log "========================================================================="
+log "Backup for $date finished at `date '+%Y-%m-%d %H:%M:%S'`"
+log "========================================================================="
 
 if [ $ret -ne 0 ]
 then
-	pout
-	pout "There were some errors when running the backup on: $ERROR_HOSTS"
-	pout
+	error
+	error "There were some errors when running the backup on: $ERROR_HOSTS"
+	error
 	if [ -n "$LOG_FILE" ]
 	then
-		pout "Please take a look at the log: $LOG_FILE"
-		pout
+		error "Please take a look at the log: $LOG_FILE"
+		error
 	fi
 fi
 
