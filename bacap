@@ -50,26 +50,27 @@ BACAPRC=$1
 
 # Load configuration files
 load_config() {
+	extra_config=$1
 	source "/etc/bacaprc" 2> /dev/null
 	source "/etc/bacap/bacaprc" 2> /dev/null
 	source "$SCRIPT_DIR/bacaprc" 2> /dev/null
 	test -n "$BACAPRC" && source "$BACAPRC"
+	test -n "$extra_config" && source "$1" 2> /dev/null
+
+	run=
+	[ $DRY_RUN -eq 1 ] &&
+		run=echo
+	[ $VERBOSE -eq 1 ] &&
+		RSYNC_FLAGS="$RSYNC_FLAGS $RSYNC_VERBOSE_FLAGS"
+	[ $DEBUG -eq 1 ] &&
+		V=-v
+	exec 3>&2
+	[ -n "$LOG_FILE" ] &&
+		exec 1>>"$LOG_FILE" &&
+		exec 2>>"$LOG_FILE"
+
+	export RSYNC_RSH
 }
-load_config
-
-export RSYNC_RSH
-
-run=
-[ $DRY_RUN -eq 1 ] &&
-	run=echo
-[ $VERBOSE -eq 1 ] &&
-	RSYNC_FLAGS="$RSYNC_FLAGS $RSYNC_VERBOSE_FLAGS"
-[ $DEBUG -eq 1 ] &&
-	V=-v
-exec 3>&2
-[ -n "$LOG_FILE" ] &&
-	exec 1>>"$LOG_FILE" &&
-	exec 2>>"$LOG_FILE"
 
 error() {
 	echo "$@" >&3
@@ -99,8 +100,7 @@ for host_path in "$CONFIG_PATH"/*
 do
 	saved_ret=$ret
 	# Load default config and override config if correspond
-	load_config
-	source "$host_path/bacaprc" 2>/dev/null
+	load_config "$host_path/bacaprc"
 	host=`basename "$host_path"`
 	host_backup_path="$BACKUP_PATH/$host"
 	mkdir -p $host_backup_path
