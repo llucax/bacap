@@ -89,6 +89,14 @@ ping_host() {
 	ping -c1 "$1" > /dev/null 2>&1
 }
 
+load_config
+
+if ! test -d "$BACKUP_PATH"
+then
+	error "BACKUP_PATH=$BACKUP_PATH doesn't exist!"
+	exit 1
+fi
+
 date=`date "+$DATE_FMT"`
 log
 log
