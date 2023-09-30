@@ -28,7 +28,7 @@ idea. All I can tell you is:
 Did I mention is very simple? I guess that is the only selling point, so
 remember: **It's very simple** =)
 
-.. _Bacap: http://www.llucax.com/proj/bacap/
+.. _Bacap: https://github.com/llucax/bacap/
 .. _SLOC: http://en.wikipedia.org/wiki/Source_lines_of_code
 .. _Bash: http://www.gnu.org/software/bash/
 .. _rsync: http://rsync.samba.org/
@@ -55,8 +55,8 @@ it to wherever you like. Set the executable bit if appropriate::
 
 	chmod a+x bacap
 
-__ http://git.llucax.com/w/software/bacap.git?a=blob_plain;f=bacap;hb=HEAD
-__ http://git.llucax.com/w/software/bacap.git
+__ https://raw.githubusercontent.com/llucax/bacap/main/bacap
+__ https://github.com/llucax/bacap
 .. _git: http://git-scm.com/
 
 
