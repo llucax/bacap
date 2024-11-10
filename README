@@ -135,7 +135,7 @@ extra configuration file. All options are managed through configurations files.
 
 The script creates a new directory in ``$BACKUP_PATH/$host/$date`` and copies
 (hard-links) the configured paths for each ``$host``. ``$date`` is the current
-date at the time of starting the script, formated according to ``$DATE_FMT``. By
+date at the time of starting the script, formatted according to ``$DATE_FMT``. By
 default this has day *resolution*, but you can add hours, minutes or even
 seconds if you want to do more frequent backups. If the directory already exist
 for any host, it skips that host.
