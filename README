@@ -84,12 +84,10 @@ configuration file(s) are read initially and each time the script backups a new
 host. So the configuration file(s) are read at least two times even if you
 backup one host.
 
-The configuration file is a Bash_ script too, and these are the default values:
+The configuration file is a Bash_ script too, you can see the `default values
+in the script`__.
 
-.. include:: bacap
-	:literal:
-	:start-after: #_INCLUDE_START_
-	:end-before: #_INCLUDE_END_
+__ https://github.com/llucax/bacap/blob/main/bacap#L4-L44
 
 Once you've created the configuration file(s), you should create the directory
 ``$CONFIG_PATH`` (meaning, the value you used for that variable in the
